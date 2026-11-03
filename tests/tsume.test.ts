@@ -22,14 +22,20 @@ describe('詰み探索', () => {
   });
 
   it('沒有詰就回傳 null', () => {
-    assert.equal(new MateSolver(Position.fromSfen('4k4/9/9/9/9/9/9/9/4K4 b P 1')).shortestMate(3), null);
+    assert.equal(
+      new MateSolver(Position.fromSfen('4k4/9/9/9/9/9/9/9/4K4 b P 1')).shortestMate(3),
+      null,
+    );
   });
 });
 
 describe('詰將棋題庫', () => {
   it('每種長度都有題目', () => {
     for (const length of [1, 3, 5, 7]) {
-      assert.ok(TSUME_PROBLEMS.some((p) => p.length === length), `${length} 手詰`);
+      assert.ok(
+        TSUME_PROBLEMS.some((p) => p.length === length),
+        `${length} 手詰`,
+      );
     }
   });
 

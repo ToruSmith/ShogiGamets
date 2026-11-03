@@ -23,7 +23,11 @@ export const levelById = (id: number): AiLevel =>
   AI_LEVELS.find((level) => level.id === id) ?? (AI_LEVELS[0] as AiLevel);
 
 /** 有持時間時，思考時間不能超過剩餘時間的一小部分 */
-export function thinkingTime(level: AiLevel, remainingMs: number | null, byoyomiMs: number): number {
+export function thinkingTime(
+  level: AiLevel,
+  remainingMs: number | null,
+  byoyomiMs: number,
+): number {
   if (remainingMs === null) return level.movetimeMs;
   const budget = remainingMs / 30 + byoyomiMs * 0.7;
   return Math.max(150, Math.min(level.movetimeMs, budget));

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 1040" width="960" height="1040" preserveAspectRatio="none">
+  <!-- 榧木盤面：底色漸層 + 柾目（直紋）+ 細孔。當成圖片引用，瀏覽器只點陣化一次。 -->
+  <defs>
+    <linearGradient id="base" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f0cf8a"/>
+      <stop offset="0.55" stop-color="#e6bd70"/>
+      <stop offset="1" stop-color="#d9aa5c"/>
+    </linearGradient>
+    <filter id="grain" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.11 0.0045" numOctaves="4" seed="11"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.52  0 0 0 0 0.31  0 0 0 0 0.08  1.6 0 0 0 -0.62"/>
+    </filter>
+    <filter id="flame" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.0016" numOctaves="2" seed="3"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.98  0 0 0 0 0.86  0 0 0 0 0.6  0 1.4 0 0 -0.62"/>
+    </filter>
+    <filter id="pores" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9 0.25" numOctaves="1" seed="5"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.4  0 0 0 0 0.25  0 0 0 0 0.08  2.2 0 0 0 -1.55"/>
+    </filter>
+  </defs>
+  <rect width="960" height="1040" fill="url(#base)"/>
+  <rect width="960" height="1040" filter="url(#flame)"/>
+  <rect width="960" height="1040" filter="url(#grain)" opacity="0.42"/>
+  <rect width="960" height="1040" filter="url(#pores)" opacity="0.5"/>
+</svg>

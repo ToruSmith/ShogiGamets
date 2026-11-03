@@ -72,7 +72,11 @@ export async function analyzeGame(
       best.push(null);
       mates.push(0);
     } else {
-      const result = await engine.search({ sfen: startSfen, moves: usiMoves.slice(0, ply), movetimeMs });
+      const result = await engine.search({
+        sfen: startSfen,
+        moves: usiMoves.slice(0, ply),
+        movetimeMs,
+      });
       scores.push(senteScore(result.info, senteToMove));
       best.push(result.bestMove === 'resign' ? null : result.bestMove);
       mates.push(result.info?.mate ?? null);

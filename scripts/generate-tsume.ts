@@ -122,11 +122,13 @@ function randomPosition(attackers: number, handCount: number): string | null {
   if (placedAttackers === 0) return null;
 
   const hand: number[] = [];
-  for (let i = 0; i < handCount; i++) hand.push(pick([GOLD, SILVER, ROOK, BISHOP, KNIGHT, LANCE, PAWN, GOLD]));
+  for (let i = 0; i < handCount; i++)
+    hand.push(pick([GOLD, SILVER, ROOK, BISHOP, KNIGHT, LANCE, PAWN, GOLD]));
 
   // 數量不能超過一副棋的總數
   const used: Record<number, number> = {};
-  for (const p of placed) if (p.type !== KING) used[baseType(p.type)] = (used[baseType(p.type)] ?? 0) + 1;
+  for (const p of placed)
+    if (p.type !== KING) used[baseType(p.type)] = (used[baseType(p.type)] ?? 0) + 1;
   for (const type of hand) used[type] = (used[type] ?? 0) + 1;
   for (const [type, count] of Object.entries(used)) {
     if (count > (TOTALS[Number(type)] as number)) return null;

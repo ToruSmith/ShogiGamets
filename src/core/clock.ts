@@ -90,10 +90,13 @@ export function replayClock(
 /** 顯示用：1:05、0:09.5（最後十秒顯示小數） */
 export function formatClock(ms: number): string {
   const clamped = Math.max(0, ms);
-  if (clamped < 10_000) return `${Math.floor(clamped / 1000)}.${Math.floor((clamped % 1000) / 100)}`;
+  if (clamped < 10_000)
+    return `${Math.floor(clamped / 1000)}.${Math.floor((clamped % 1000) / 100)}`;
   const total = Math.ceil(clamped / 1000);
   const hours = Math.floor(total / 3600);
   const minutes = Math.floor((total % 3600) / 60);
   const seconds = String(total % 60).padStart(2, '0');
-  return hours ? `${hours}:${String(minutes).padStart(2, '0')}:${seconds}` : `${minutes}:${seconds}`;
+  return hours
+    ? `${hours}:${String(minutes).padStart(2, '0')}:${seconds}`
+    : `${minutes}:${seconds}`;
 }

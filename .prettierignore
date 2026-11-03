@@ -1,0 +1,17 @@
+node_modules
+dist
+dist-*
+test-results
+playwright-report
+package-lock.json
+src/core/tsume-data.ts
+public/icons
+*.woff2
+# feature/core-rules 原有的規則引擎檔案保持原樣，不重新排版
+src/core/position.ts
+src/core/notation.ts
+src/core/types.ts
+src/core/game.ts
+src/core/move.ts
+tests/rules.test.ts
+tests/position.test.ts

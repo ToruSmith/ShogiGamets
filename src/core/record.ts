@@ -393,18 +393,20 @@ function parseKifMove(text: string, position: Position, previousTo: number | nul
     return makeMove(from, to, promote);
   }
   // 沒有寫出發點（KI2 風格）：從合法手中找唯一符合的
-  const candidates = position.legalMoves().filter(
-    (move) =>
-      !isDrop(move) &&
-      moveTo(move) === to &&
-      typeOf(position.board[moveFrom(move)] as number) === type &&
-      movePromotes(move) === promote,
-  );
+  const candidates = position
+    .legalMoves()
+    .filter(
+      (move) =>
+        !isDrop(move) &&
+        moveTo(move) === to &&
+        typeOf(position.board[moveFrom(move)] as number) === type &&
+        movePromotes(move) === promote,
+    );
   if (candidates.length === 1) return candidates[0] as Move;
   // 只有打入能到達時，省略「打」也接受
-  const drops = position.legalMoves().filter(
-    (move) => isDrop(move) && moveTo(move) === to && moveDropType(move) === type,
-  );
+  const drops = position
+    .legalMoves()
+    .filter((move) => isDrop(move) && moveTo(move) === to && moveDropType(move) === type);
   return candidates.length === 0 && drops.length === 1 ? (drops[0] as Move) : null;
 }
 

@@ -36,7 +36,9 @@ const clean = (value: Json): Json => {
 function resolveTimes(value: Json, now: number): Json {
   if (value && typeof value === 'object') {
     if ((value as Tree)['.sv'] === 'timestamp') return now;
-    return Object.fromEntries(Object.entries(value as Tree).map(([k, v]) => [k, resolveTimes(v, now)]));
+    return Object.fromEntries(
+      Object.entries(value as Tree).map(([k, v]) => [k, resolveTimes(v, now)]),
+    );
   }
   return value;
 }

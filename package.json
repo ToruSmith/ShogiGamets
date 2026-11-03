@@ -1,15 +1,25 @@
 {
   "name": "shogi-games",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
-  "description": "將棋：規則引擎（介面開發中）。",
+  "description": "將棋：對電腦、雙人同機、線上對戰、詰將棋、復盤與賽後分析，可離線遊玩的 PWA。",
   "type": "module",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:e2e": "vite build --mode e2e",
+    "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "test": "node --import tsx --test \"tests/**/*.test.ts\""
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "node --import tsx --test \"tests/**/*.test.ts\"",
+    "test:e2e": "playwright test",
+    "generate:tsume": "node --import tsx scripts/generate-tsume.ts > src/core/tsume-data.ts",
+    "generate:icons": "node scripts/generate-icons.mjs",
+    "check": "npm run typecheck && npm run format:check && npm test && npm run build"
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.3.4",

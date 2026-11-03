@@ -50,7 +50,9 @@ describe('走法產生', () => {
           .filter((move) => !isDrop(move) && position.board[moveTo(move)] !== EMPTY)
           .map((move) => moveToUsi(move).replace('+', '')),
       );
-      const fromAi = new Set(captureMoves(position, []).map((move) => moveToUsi(move).replace('+', '')));
+      const fromAi = new Set(
+        captureMoves(position, []).map((move) => moveToUsi(move).replace('+', '')),
+      );
       assert.deepEqual([...fromAi].sort(), [...fromCore].sort(), position.toSfen());
     }
   });
@@ -133,14 +135,24 @@ describe('內建引擎', () => {
 describe('USI', () => {
   it('解析 info 行', () => {
     const info = parseInfo('info depth 7 seldepth 9 time 10 nodes 1234 score cp -56 pv 7g7f 3c3d');
-    assert.deepEqual(info, { depth: 7, scoreCp: -56, mate: null, nodes: 1234, pv: ['7g7f', '3c3d'] });
+    assert.deepEqual(info, {
+      depth: 7,
+      scoreCp: -56,
+      mate: null,
+      nodes: 1234,
+      pv: ['7g7f', '3c3d'],
+    });
     assert.equal(parseInfo('info depth 3 score mate -5 pv 1a1b')?.mate, -5);
     assert.equal(parseInfo('info string hello'), null);
   });
 
   it('透過 USI 通道搜尋，取消時以 CancelledError 結束', async () => {
     const engine = new UsiEngine('test', inlineTransport);
-    const result = await engine.search({ sfen: '4k4/9/4P4/9/9/9/9/9/4K4 b G 1', moves: [], depth: 2 });
+    const result = await engine.search({
+      sfen: '4k4/9/4P4/9/9/9/9/9/4K4 b G 1',
+      moves: [],
+      depth: 2,
+    });
     assert.equal(result.bestMove, 'G*5b');
     assert.equal(result.info?.mate, 1);
     const running = engine.search({ sfen: START_SFEN, moves: [], movetimeMs: 5000 });
@@ -153,7 +165,11 @@ describe('USI', () => {
 
   it('被詰時回傳 resign', async () => {
     const engine = new UsiEngine('test', inlineTransport);
-    const result = await engine.search({ sfen: '4k4/4G4/4P4/9/9/9/9/9/4K4 w - 1', moves: [], depth: 1 });
+    const result = await engine.search({
+      sfen: '4k4/4G4/4P4/9/9/9/9/9/4K4 w - 1',
+      moves: [],
+      depth: 1,
+    });
     assert.equal(result.bestMove, 'resign');
     engine.dispose();
   });

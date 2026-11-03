@@ -35,7 +35,9 @@ function writeRoom(code: string, room: RoomData | null): void {
 function resolveTimes(value: unknown, now: number): unknown {
   if (value && typeof value === 'object') {
     if ((value as Tree)['.sv'] === 'timestamp') return now;
-    return Object.fromEntries(Object.entries(value as Tree).map(([k, v]) => [k, resolveTimes(v, now)]));
+    return Object.fromEntries(
+      Object.entries(value as Tree).map(([k, v]) => [k, resolveTimes(v, now)]),
+    );
   }
   return value;
 }

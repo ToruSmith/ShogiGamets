@@ -117,7 +117,12 @@ export async function listLobby(backend: RoomBackend): Promise<LobbyRoom[]> {
   return Object.entries(rooms)
     .filter(([, room]) => {
       const seats = Object.keys(room.players ?? {});
-      return room.config?.public && seats.length === 1 && !room.n && now - room.createdAt < 60 * 60 * 1000;
+      return (
+        room.config?.public &&
+        seats.length === 1 &&
+        !room.n &&
+        now - room.createdAt < 60 * 60 * 1000
+      );
     })
     .map(([code, room]) => {
       const hostSeat = Object.keys(room.players)[0] as Seat;

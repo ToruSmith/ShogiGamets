@@ -17,7 +17,13 @@ import { PermissionDenied, RulesBackend, RulesDb } from './helpers/rules-db.ts';
 
 const usi = (text: string): Move => usiToMove(text) as Move;
 const flush = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 0));
-const EVEN: RoomConfig = { handicap: 'even', mainMs: 0, byoyomiMs: 0, incrementMs: 0, public: true };
+const EVEN: RoomConfig = {
+  handicap: 'even',
+  mainMs: 0,
+  byoyomiMs: 0,
+  incrementMs: 0,
+  public: true,
+};
 
 async function setup(config: RoomConfig = EVEN) {
   const db = new RulesDb();
@@ -27,7 +33,15 @@ async function setup(config: RoomConfig = EVEN) {
   const code = await host.create(config, 'Alice', 'sente');
   assert.equal(await guest.join(code, 'Bob'), null);
   await flush();
-  return { db, host, guest, code, views, alice: new RulesBackend(db, 'alice'), bob: new RulesBackend(db, 'bob') };
+  return {
+    db,
+    host,
+    guest,
+    code,
+    views,
+    alice: new RulesBackend(db, 'alice'),
+    bob: new RulesBackend(db, 'bob'),
+  };
 }
 
 describe('房間代碼', () => {
@@ -135,12 +149,20 @@ describe('規則擋下作弊', () => {
     await denied(() => bob.update(code, { 'moves/0': { i: 0, m: '3c3d', t: SERVER_TIME }, n: 1 }));
     await denied(() => alice.update(code, { 'moves/0': { i: 0, m: '7g7f', t: 123 }, n: 1 }));
     await denied(() => alice.update(code, { 'moves/0': { i: 0, m: '7g7f', t: SERVER_TIME } }));
-    await denied(() => alice.update(code, { 'moves/0': { i: 0, m: 'hello', t: SERVER_TIME }, n: 1 }));
-    await denied(() => alice.update(code, { 'moves/0': { i: 5, m: '7g7f', t: SERVER_TIME }, n: 1 }));
+    await denied(() =>
+      alice.update(code, { 'moves/0': { i: 0, m: 'hello', t: SERVER_TIME }, n: 1 }),
+    );
+    await denied(() =>
+      alice.update(code, { 'moves/0': { i: 5, m: '7g7f', t: SERVER_TIME }, n: 1 }),
+    );
     await denied(() => alice.update(code, { 'resigned/gote': true }));
     await denied(() => alice.update(code, { winner: 'sente' }));
     await denied(() => alice.update(code, { 'config/mainMs': 1 }));
-    await denied(() => new RulesBackend(db, 'mallory').update(code, { 'players/gote': { uid: 'mallory', name: 'M' } }));
+    await denied(() =>
+      new RulesBackend(db, 'mallory').update(code, {
+        'players/gote': { uid: 'mallory', name: 'M' },
+      }),
+    );
     await alice.update(code, { 'moves/0': { i: 0, m: '7g7f', t: SERVER_TIME }, n: 1 });
     await denied(() => alice.update(code, { 'moves/0': { i: 0, m: '2g2f', t: SERVER_TIME } }));
   });
@@ -178,7 +200,11 @@ describe('大廳', () => {
       'Carol',
       'sente',
     );
-    const full = await new RoomSession(new RulesBackend(db, 'dave'), () => undefined).create(EVEN, 'Dave', 'gote');
+    const full = await new RoomSession(new RulesBackend(db, 'dave'), () => undefined).create(
+      EVEN,
+      'Dave',
+      'gote',
+    );
     await new RoomSession(new RulesBackend(db, 'erin'), () => undefined).join(full, 'Erin');
     const lobby = await listLobby(alice);
     assert.deepEqual(

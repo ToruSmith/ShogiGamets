@@ -65,7 +65,16 @@ const MOTIONS: Record<number, { steps: Delta[]; slides: Delta[] }> = {
     ],
     slides: [],
   },
-  [SILVER]: { steps: [[-1, -1], [-1, 0], [-1, 1], [1, -1], [1, 1]], slides: [] },
+  [SILVER]: {
+    steps: [
+      [-1, -1],
+      [-1, 0],
+      [-1, 1],
+      [1, -1],
+      [1, 1],
+    ],
+    slides: [],
+  },
   [GOLD]: { steps: GOLD_STEPS, slides: [] },
   [BISHOP]: { steps: [], slides: DIAG },
   [ROOK]: { steps: [], slides: ORTHO },
@@ -100,7 +109,11 @@ for (const color of [SENTE, GOTE] as const) {
       slides.push(
         motion.slides.map(([dr, dc]) => {
           const ray: number[] = [];
-          for (let r = rank + dr * sign, c = column + dc * sign; inside(r, c); r += dr * sign, c += dc * sign) {
+          for (
+            let r = rank + dr * sign, c = column + dc * sign;
+            inside(r, c);
+            r += dr * sign, c += dc * sign
+          ) {
             ray.push(squareOf(r, c));
           }
           return ray;
@@ -132,10 +145,7 @@ export function captureMoves(position: Position, out: Move[]): Move[] {
     const type = typeOf(piece);
     const i = index(type, color);
     const add = (to: number): void => {
-      const promote =
-        canPromote(type) && (inZone(from, color) || inZone(to, color))
-          ? true
-          : false;
+      const promote = canPromote(type) && (inZone(from, color) || inZone(to, color)) ? true : false;
       if (!promote && mustPromote(type, to, color)) return;
       out.push(makeMove(from, to, promote));
     };

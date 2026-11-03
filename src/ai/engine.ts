@@ -130,7 +130,8 @@ function kingSafety(position: Position, color: Color): number {
       if (colorOf(piece) === color) {
         if (distance <= 2 && isGoldLike(type)) defenders += distance === 1 ? 2 : 1;
       } else {
-        const weight = type === DRAGON || type === HORSE || type === ROOK ? 3 : type === PAWN ? 1 : 2;
+        const weight =
+          type === DRAGON || type === HORSE || type === ROOK ? 3 : type === PAWN ? 1 : 2;
         pressure += distance === 1 ? weight * 3 : distance === 2 ? weight * 2 : weight;
       }
     }
@@ -155,7 +156,8 @@ export function evaluate(position: Position): number {
   }
   for (const type of HAND_TYPES) {
     const value = HAND_VALUE[type] as number;
-    score += ((position.hands[SENTE][type] as number) - (position.hands[GOTE][type] as number)) * value;
+    score +=
+      ((position.hands[SENTE][type] as number) - (position.hands[GOTE][type] as number)) * value;
   }
   score += kingSafety(position, SENTE) - kingSafety(position, GOTE);
   return position.turn === SENTE ? score : -score;
@@ -334,7 +336,10 @@ export class Engine {
       scored
         .map((entry) => ({
           ...entry,
-          noisy: entry.score > -MATE_BOUND ? entry.score + (this.random() - 0.5) * 2 * noise : entry.score,
+          noisy:
+            entry.score > -MATE_BOUND
+              ? entry.score + (this.random() - 0.5) * 2 * noise
+              : entry.score,
         }))
         .sort((a, b) => b.noisy - a.noisy)[0];
     const chosen = pick as { move: Move; score: number };
@@ -423,7 +428,13 @@ export class Engine {
     if (this.nodes > this.nodeLimit) throw new TimeUp();
   }
 
-  private negamax(depth: number, alpha: number, beta: number, ply: number, allowNull: boolean): number {
+  private negamax(
+    depth: number,
+    alpha: number,
+    beta: number,
+    ply: number,
+    allowNull: boolean,
+  ): number {
     this.checkTime();
     const position = this.position;
     if (ply > 0 && this.isRepetition()) return 0;
@@ -589,7 +600,9 @@ export class Engine {
       }
       scores[i] = score;
     }
-    const order = moves.map((_, i) => i).sort((a, b) => (scores[b] as number) - (scores[a] as number));
+    const order = moves
+      .map((_, i) => i)
+      .sort((a, b) => (scores[b] as number) - (scores[a] as number));
     return order.map((i) => moves[i] as Move);
   }
 
