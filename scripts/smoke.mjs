@@ -69,7 +69,19 @@ for (const icon of icons) {
 }
 
 /* ── 2. 瀏覽器：畫面、Service Worker、離線、線上 ── */
-const browser = await chromium.launch();
+// 在代理後面執行時（例如公司網路），讓瀏覽器也走 HTTPS_PROXY；Node 的 fetch 則用 NODE_USE_ENV_PROXY=1
+const proxyUrl = process.env.HTTPS_PROXY ?? process.env.https_proxy;
+const proxy = proxyUrl
+  ? (() => {
+      const url = new URL(proxyUrl);
+      return {
+        server: `${url.protocol}//${url.host}`,
+        ...(url.username ? { username: decodeURIComponent(url.username) } : {}),
+        ...(url.password ? { password: decodeURIComponent(url.password) } : {}),
+      };
+    })()
+  : undefined;
+const browser = await chromium.launch(proxy ? { proxy } : {});
 const context = await browser.newContext({ locale: 'zh-TW' });
 const page = await context.newPage();
 const errors = [];
