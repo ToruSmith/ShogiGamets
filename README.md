@@ -118,7 +118,7 @@ ui (views/ board/ components/)  ──▶  state/  ──▶  core/
 
 ## 部署
 
-照順序做完這四步。Firebase 可以晚點再設：沒有設定時其他模式照常，線上對戰會顯示「尚未設定」。
+照順序做完這四步。每個平台的逐步操作、畫面上的選項怎麼填、背後的原理與疑難排解，見 [docs/deployment.md](docs/deployment.md)。Firebase 可以晚點再設：沒有設定時其他模式照常，線上對戰會顯示「尚未設定」。
 
 ### 1. 決定正式版分支
 
