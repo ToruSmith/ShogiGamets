@@ -26,32 +26,16 @@
 
 ## 一、GitHub
 
-### 1-1 建立 `main` 並設為預設分支
+### 1-1 `main` 是正式版分支
 
-目前儲存庫只有 `feature/core-rules` 和 `claude/shogi-game-development-pk7w2c`。後者是在前者之上往下做的，
-包含全部歷史，所以直接從它建立 `main` 就好，不需要合併。
+所有程式都在 `main`。確認 **Settings → General → Default branch** 是 `main`；不是的話按切換圖示改成 `main`。
 
-1. 打開 <https://github.com/ToruSmith/ShogiGamets/branches>，按 **New branch**。
-2. 名稱填 `main`，來源（Source）選 `claude/shogi-game-development-pk7w2c`，建立。
-3. 到 **Settings → General → Default branch**，按切換圖示，選 `main`，確認。
-
-> 為什麼：Cloudflare Pages 需要一個「正式版分支」，推送到它才會更新正式網址；其他分支會變成預覽網址。
+> 為什麼：Cloudflare Pages 的「正式版分支」設成 `main`，推送到它才會更新正式網址；其他分支會變成預覽網址。
 > 預設分支則決定別人打開儲存庫時看到哪一版、PR 預設要合併到哪裡。
-
-也可以在本機用指令建立：
-
-```bash
-git fetch origin
-```
-
-```bash
-git push origin origin/claude/shogi-game-development-pk7w2c:refs/heads/main
-```
 
 ### 1-2 確認 CI
 
-打開 **Actions** 分頁，`CI` 應該已經有綠色勾勾（這條分支的最近兩次推送都通過了）。
-建立 `main` 之後，推送到 `main` 也會跑一次。
+打開 **Actions** 分頁，`CI` 應該有綠色勾勾。每次推送（不論哪個分支）與每個 PR 都會跑一次。
 
 CI 做的事：`npm ci` → 型別檢查 → 排版檢查 → 120 個單元測試 → 建置 → 檢查 `sw.js` →
 安裝 Chromium → 18 個端對端測試。失敗時會上傳 `test-results` 方便看截圖。

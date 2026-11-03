@@ -120,11 +120,10 @@ ui (views/ board/ components/)  ──▶  state/  ──▶  core/
 
 照順序做完這四步。每個平台的逐步操作、畫面上的選項怎麼填、背後的原理與疑難排解，見 [docs/deployment.md](docs/deployment.md)。Firebase 可以晚點再設：沒有設定時其他模式照常，線上對戰會顯示「尚未設定」。
 
-### 1. 決定正式版分支
+### 1. 分支
 
-這個儲存庫目前沒有 `main`。Cloudflare Pages 的「正式版分支」會在每次推送時自動部署，其他分支則產生預覽網址。
-建議從這條分支建立 `main`（或把它合併進你要的分支），再把 Pages 的正式版分支設成它。
-CI（`.github/workflows/ci.yml`）每個分支的推送都會跑。
+正式版分支是 `main`：推送到 `main` 時，Cloudflare Pages 會自動部署正式網址；推送到其他分支則產生預覽網址。
+CI（`.github/workflows/ci.yml`）在每個分支的推送與每個 PR 都會跑。日常修改建議開分支、走 PR，測試通過再合併到 `main`。
 
 ### 2. Firebase（線上對戰）
 
