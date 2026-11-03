@@ -19,7 +19,8 @@
     "test:e2e": "playwright test",
     "generate:tsume": "node --import tsx scripts/generate-tsume.ts > src/core/tsume-data.ts",
     "generate:icons": "node scripts/generate-icons.mjs",
-    "check": "npm run typecheck && npm run format:check && npm test && npm run build"
+    "check": "npm run typecheck && npm run format:check && npm test && npm run build",
+    "smoke": "node scripts/smoke.mjs"
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.3.4",

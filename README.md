@@ -45,18 +45,19 @@ npm run dev
 
 ## 指令
 
-| 指令                     | 用途                                                            |
-| ------------------------ | --------------------------------------------------------------- |
-| `npm run dev`            | 開發伺服器                                                      |
-| `npm run build`          | 正式版建置，輸出到 `dist/`                                      |
-| `npm run preview`        | 預覽 `dist/`                                                    |
-| `npm test`               | 單元測試（node:test）：規則、棋譜、持時間、詰將棋、AI、線上規則 |
-| `npm run test:e2e`       | 端對端測試（Playwright），會自動建置 e2e 版並啟動預覽伺服器     |
-| `npm run typecheck`      | TypeScript 型別檢查                                             |
-| `npm run format`         | Prettier 排版                                                   |
-| `npm run check`          | 型別、排版、單元測試、建置一次跑完                              |
-| `npm run generate:tsume` | 重新產生詰將棋題庫（約兩分半鐘）                                |
-| `npm run generate:icons` | 重新產生 PWA 圖示                                               |
+| 指令                      | 用途                                                            |
+| ------------------------- | --------------------------------------------------------------- |
+| `npm run dev`             | 開發伺服器                                                      |
+| `npm run build`           | 正式版建置，輸出到 `dist/`                                      |
+| `npm run preview`         | 預覽 `dist/`                                                    |
+| `npm test`                | 單元測試（node:test）：規則、棋譜、持時間、詰將棋、AI、線上規則 |
+| `npm run test:e2e`        | 端對端測試（Playwright），會自動建置 e2e 版並啟動預覽伺服器     |
+| `npm run typecheck`       | TypeScript 型別檢查                                             |
+| `npm run format`          | Prettier 排版                                                   |
+| `npm run check`           | 型別、排版、單元測試、建置一次跑完                              |
+| `npm run generate:tsume`  | 重新產生詰將棋題庫（約兩分半鐘）                                |
+| `npm run generate:icons`  | 重新產生 PWA 圖示                                               |
+| `npm run smoke -- <網址>` | 部署後的驗收（見「部署」）                                      |
 
 第一次跑端對端測試前要安裝瀏覽器：
 
@@ -115,18 +116,27 @@ ui (views/ board/ components/)  ──▶  state/  ──▶  core/
   `tests/online.test.ts` 的每次寫入都經過規則，包含各種作弊情境。它模擬的是規則語意，不是 Firebase 官方引擎，
   大改規則後請到 Firebase Console 的 Rules Playground 再確認一次。
 
-## 設定 Firebase（線上對戰）
+## 部署
 
-沒有設定 Firebase 時，其他模式照常運作，線上對戰會顯示「尚未設定」。
+照順序做完這四步。Firebase 可以晚點再設：沒有設定時其他模式照常，線上對戰會顯示「尚未設定」。
 
-1. 在 [Firebase Console](https://console.firebase.google.com/) 建立專案，啟用 **Authentication → 匿名登入** 與 **Realtime Database**。
-2. 部署資料庫規則：
+### 1. 決定正式版分支
+
+這個儲存庫目前沒有 `main`。Cloudflare Pages 的「正式版分支」會在每次推送時自動部署，其他分支則產生預覽網址。
+建議從這條分支建立 `main`（或把它合併進你要的分支），再把 Pages 的正式版分支設成它。
+CI（`.github/workflows/ci.yml`）每個分支的推送都會跑。
+
+### 2. Firebase（線上對戰）
+
+1. 在 [Firebase Console](https://console.firebase.google.com/) 建立專案，啟用 **Authentication → 登入方式 → 匿名**，
+   並建立 **Realtime Database**（地區任選，網址之後要用）。
+2. 部署資料庫規則（含 `createdAt` 索引，大廳查詢需要它）：
 
    ```bash
    npx firebase-tools deploy --only database --project <你的專案 ID>
    ```
 
-3. 在專案設定新增網頁應用程式，把設定值填進環境變數（本機可以寫在 `.env.local`）：
+3. 在「專案設定 → 一般 → 你的應用程式」新增網頁應用程式，把設定值抄下來，對應到 `.env.example` 裡的變數：
 
    ```
    VITE_FIREBASE_API_KEY=...
@@ -136,24 +146,47 @@ ui (views/ board/ components/)  ──▶  state/  ──▶  core/
    VITE_FIREBASE_APP_ID=...
    ```
 
+   本機測試時複製成 `.env.local`（已列在 `.gitignore`）。
+
 這些值會出現在每個訪客的瀏覽器裡，本來就不是祕密，資料安全由 `database.rules.json` 把關。
+如果你在 Google Cloud 對 API 金鑰設了「HTTP 參照網址」限制，要把 `*.pages.dev` 與自訂網域加進去。
 Firebase SDK 只在進入線上對戰時才動態載入，單機模式不會下載。
 
-## 部署到 Cloudflare Pages
+### 3. Cloudflare Pages
 
-在 Cloudflare Pages 連接這個 GitHub 儲存庫，建置設定：
+在 Cloudflare Pages 連接這個 GitHub 儲存庫：
 
-| 項目     | 值                  |
-| -------- | ------------------- |
-| 建置指令 | `npm run build`     |
-| 輸出目錄 | `dist`              |
-| Node.js  | 讀取 `.nvmrc`（22） |
+| 項目     | 值                                    |
+| -------- | ------------------------------------- |
+| 框架預設 | 無（None）                            |
+| 建置指令 | `npm run build`                       |
+| 輸出目錄 | `dist`                                |
+| Node.js  | 自動讀取 `.nvmrc`（22），不必另外設定 |
+| 環境變數 | 上一步的 `VITE_FIREBASE_*`            |
 
-需要線上對戰時，在 Pages 專案的「設定 → 環境變數」加上上面的 `VITE_FIREBASE_*`（建置時讀取，改完要重新部署）。
-
+- 環境變數在建置時讀進程式，**改完要重新部署**才會生效。「正式版」與「預覽」的變數是分開設定的。
 - 路由用網址雜湊（`#/play`、`#/r/ABC234`），不需要設定轉址。
 - `public/_headers` 讓 `sw.js` 與 `index.html` 不被快取、`assets/` 長期快取。
-- 所有路徑都是相對路徑，部署在子目錄也能運作。
+- 所有路徑都是相對路徑，部署在子目錄或自訂網域都能運作。
+
+### 4. 驗收
+
+部署完成後，對網址跑驗收腳本（需要 `npx playwright install chromium`）：
+
+```bash
+npm run smoke -- https://<專案>.pages.dev
+```
+
+它會檢查首頁、`_headers` 有沒有生效、manifest 與圖示、Service Worker、離線重新整理，以及 Firebase 是否設定。
+設好 Firebase 之後加上 `--online`，會實際匿名登入並讀取大廳；再加 `--write` 會真的開一間私人房間再刪掉，
+確認資料庫規則允許寫入：
+
+```bash
+npm run smoke -- https://<專案>.pages.dev --online --write
+```
+
+`✗` 會附上原因，例如 `auth/api-key-not-valid`（金鑰填錯）、`PERMISSION_DENIED`（規則沒部署或匿名登入沒開）。
+`_headers` 的效果已經用 Cloudflare 的 `wrangler pages dev` 在本機驗證過。
 
 ## PWA 與離線
 

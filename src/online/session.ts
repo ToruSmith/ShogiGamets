@@ -116,11 +116,15 @@ export async function listLobby(backend: RoomBackend): Promise<LobbyRoom[]> {
   const now = Date.now() + backend.serverOffset();
   return Object.entries(rooms)
     .filter(([, room]) => {
-      const seats = Object.keys(room.players ?? {});
+      const seats = Object.keys(room.players ?? {}) as Seat[];
+      const host = seats[0];
       return (
         room.config?.public &&
         seats.length === 1 &&
         !room.n &&
+        // 房主關掉分頁時 onDisconnect 會把 presence 設成 false
+        host !== undefined &&
+        room.presence?.[host] !== false &&
         now - room.createdAt < 60 * 60 * 1000
       );
     })

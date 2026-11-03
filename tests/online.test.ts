@@ -211,5 +211,8 @@ describe('大廳', () => {
       lobby.map((room) => [room.code, room.host, room.hostSeat]),
       [[open, 'Alice', 'sente']],
     );
+    // 房主斷線（關掉分頁）後就不再列出
+    await alice.update(open, { 'presence/sente': false });
+    assert.deepEqual(await listLobby(alice), []);
   });
 });

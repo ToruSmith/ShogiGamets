@@ -51,3 +51,20 @@ test('邀請連結：新訪客先輸入名字', async ({ browser }) => {
   await page.getByTestId('join-confirm').click();
   await expect(page.getByRole('alert')).toContainText('找不到');
 });
+
+test('房主在等待中離開，房間會被刪除', async ({ context }) => {
+  const host = await context.newPage();
+  await host.goto('./#/online');
+  await host.getByTestId('online-name').fill('Dana');
+  await host.getByTestId('create-room').click();
+  await expect(host.getByTestId('waiting')).toBeVisible();
+
+  const other = await context.newPage();
+  await other.goto('./#/online');
+  await expect(other.getByTestId('lobby')).toContainText('Dana');
+
+  await host.getByRole('button', { name: '返回' }).click();
+  await expect(host.getByTestId('mode-online')).toBeVisible();
+  await other.getByRole('button', { name: '重新整理' }).click();
+  await expect(other.getByText('目前沒有等待對手的房間')).toBeVisible();
+});

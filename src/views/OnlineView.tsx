@@ -1,5 +1,5 @@
 import { RefreshCw } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { PageHeader } from '../components/PageHeader.tsx';
 import { Button } from '../components/ui/button.tsx';
 import {
@@ -361,12 +361,26 @@ export function RoomRoute({ code }: { code: string }) {
   );
 }
 
-/** 房間內：再戰會換到新房間，網址跟著更新 */
+/**
+ * 房間內：再戰會換到新房間，網址跟著更新。
+ * 離開房間畫面（回大廳、回首頁）時結束連線：還沒有對手的房間會被刪掉，否則標記離線。
+ */
 function OnlineRoom({ match, code }: { match: OnlineMatch; code: string }) {
   const snapshot = useStore(match.store);
   const roomCode = snapshot.online?.code;
+  const mounted = useRef(false);
   useEffect(() => {
     if (roomCode && roomCode !== code) navigate(`r/${roomCode}`);
   }, [roomCode, code]);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      // 延後一拍：開發模式的 StrictMode 會立刻重新掛載，那時不該結束連線
+      setTimeout(() => {
+        if (!mounted.current && currentMatch.get() === match) setCurrentMatch(null);
+      }, 0);
+    };
+  }, [match]);
   return <PlayView controller={match} />;
 }

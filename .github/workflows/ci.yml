@@ -1,9 +1,10 @@
 name: CI
 
+# 每個分支的推送都跑（這個儲存庫目前沒有 main）；PR 另外再跑一次合併後的結果
 on:
   push:
-    branches: [main]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   check:
