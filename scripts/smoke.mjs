@@ -155,9 +155,20 @@ try {
         '開房間（資料庫規則允許寫入）',
         text ?? '沒有出現房間代碼',
       );
-      // 離開還沒有對手的房間會刪掉它
-      await page.goto(base.href);
-      await page.waitForTimeout(1500);
+      // 按畫面上的「返回」離開（和玩家一樣）：還沒有對手的房間會被刪除
+      await page.getByRole('button', { name: '返回' }).first().click();
+      await page.getByTestId('mode-online').waitFor({ timeout: 10_000 });
+      await page.waitForTimeout(2000);
+      if (text) {
+        await page.goto(new URL(`#/r/${text}`, base).href);
+        const gone = await page
+          .getByRole('alert')
+          .filter({ hasText: '找不到' })
+          .waitFor({ timeout: 15_000 })
+          .then(() => true)
+          .catch(() => false);
+        check(gone, '離開後房間已刪除', text);
+      }
     }
   }
 } catch (error) {
