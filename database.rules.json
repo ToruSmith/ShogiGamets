@@ -1,0 +1,105 @@
+{
+  "rules": {
+    "rooms": {
+      ".read": "auth != null && query.orderByChild === 'createdAt' && (query.limitToFirst <= 10 || query.limitToLast <= 30)",
+      ".indexOn": [
+        "createdAt"
+      ],
+      "$code": {
+        ".read": "auth != null",
+        ".write": "auth != null && ((!data.exists() && newData.exists() && (newData.child('players/sente/uid').val() === auth.uid || newData.child('players/gote/uid').val() === auth.uid)) || (data.exists() && !newData.exists() && (data.child('players/sente/uid').val() === auth.uid || data.child('players/gote/uid').val() === auth.uid || data.child('createdAt').val() < now - 86400000)))",
+        ".validate": "newData.hasChildren(['createdAt', 'config', 'n', 'players']) && $code.length === 6 && $code.matches(/^[A-HJ-NP-Z2-9]+$/)",
+        "createdAt": {
+          ".validate": "newData.isNumber() && (data.exists() ? newData.val() === data.val() : newData.val() === now)"
+        },
+        "startedAt": {
+          ".write": "auth != null && !data.exists() && (newData.parent().child('players/sente/uid').val() === auth.uid || newData.parent().child('players/gote/uid').val() === auth.uid)",
+          ".validate": "newData.isNumber() && (data.exists() ? newData.val() === data.val() : newData.val() === now) && newData.parent().child('players/sente').exists() && newData.parent().child('players/gote').exists()"
+        },
+        "config": {
+          ".validate": "newData.hasChildren(['handicap', 'mainMs', 'byoyomiMs', 'incrementMs', 'public']) && (!data.exists() || newData.val() === data.val())",
+          "handicap": {
+            ".validate": "newData.val() === 'even' || newData.val() === 'lance' || newData.val() === 'right-lance' || newData.val() === 'bishop' || newData.val() === 'rook' || newData.val() === 'rook-lance' || newData.val() === 'two' || newData.val() === 'four' || newData.val() === 'six' || newData.val() === 'eight' || newData.val() === 'ten'"
+          },
+          "mainMs": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 10800000"
+          },
+          "byoyomiMs": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 300000"
+          },
+          "incrementMs": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 60000"
+          },
+          "public": {
+            ".validate": "newData.isBoolean()"
+          },
+          "$other": {
+            ".validate": false
+          }
+        },
+        "players": {
+          "$seat": {
+            ".write": "auth != null && !data.exists() && newData.child('uid').val() === auth.uid && data.parent().child('sente/uid').val() !== auth.uid && data.parent().child('gote/uid').val() !== auth.uid",
+            ".validate": "($seat === 'sente' || $seat === 'gote') && newData.hasChildren(['uid', 'name'])",
+            "uid": {
+              ".validate": "newData.isString()"
+            },
+            "name": {
+              ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 16"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        },
+        "n": {
+          ".write": "auth != null && data.isNumber() && !data.parent().child('resigned').exists() && data.parent().child('players/sente').exists() && data.parent().child('players/gote').exists() && (((data.parent().child('n').val() % 2 === 0) === (data.parent().child('config/handicap').val() === 'even')) ? data.parent().child('players/sente/uid').val() : data.parent().child('players/gote/uid').val()) === auth.uid",
+          ".validate": "newData.isNumber() && (data.exists() ? newData.val() === data.val() + 1 : newData.val() === 0)"
+        },
+        "moves": {
+          "$key": {
+            ".write": "auth != null && !data.exists() && !data.parent().parent().child('resigned').exists() && data.parent().parent().child('players/sente').exists() && data.parent().parent().child('players/gote').exists() && (((data.parent().parent().child('n').val() % 2 === 0) === (data.parent().parent().child('config/handicap').val() === 'even')) ? data.parent().parent().child('players/sente/uid').val() : data.parent().parent().child('players/gote/uid').val()) === auth.uid",
+            ".validate": "newData.hasChildren(['i', 'm', 't']) && newData.child('i').val() === data.parent().parent().child('n').val() && newData.parent().parent().child('n').val() === data.parent().parent().child('n').val() + 1",
+            "i": {
+              ".validate": "newData.isNumber()"
+            },
+            "m": {
+              ".validate": "newData.isString() && newData.val().matches(/^([1-9][a-i][1-9][a-i]\\+?|[PLNSGBR]\\*[1-9][a-i])$/)"
+            },
+            "t": {
+              ".validate": "newData.val() === now"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        },
+        "resigned": {
+          "$seat": {
+            ".write": "auth != null && data.parent().parent().child('players').child($seat).child('uid').val() === auth.uid",
+            ".validate": "newData.val() === true"
+          }
+        },
+        "presence": {
+          "$seat": {
+            ".write": "auth != null && data.parent().parent().child('players').child($seat).child('uid').val() === auth.uid",
+            ".validate": "newData.isBoolean()"
+          }
+        },
+        "rematch": {
+          "$seat": {
+            ".write": "auth != null && data.parent().parent().child('players').child($seat).child('uid').val() === auth.uid",
+            ".validate": "newData.val() === true"
+          }
+        },
+        "next": {
+          ".write": "auth != null && !data.exists() && (data.parent().child('players/sente/uid').val() === auth.uid || data.parent().child('players/gote/uid').val() === auth.uid)",
+          ".validate": "newData.isString() && newData.val().length === 6 && newData.val().matches(/^[A-HJ-NP-Z2-9]+$/)"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    }
+  }
+}
