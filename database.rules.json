@@ -1,7 +1,7 @@
 {
   "rules": {
     "rooms": {
-      ".read": "auth != null && query.orderByChild === 'createdAt' && (query.limitToFirst <= 10 || query.limitToLast <= 30)",
+      ".read": "auth != null && query.orderByChild === 'createdAt' && ((query.limitToFirst != null && query.limitToFirst <= 10) || (query.limitToLast != null && query.limitToLast <= 30))",
       ".indexOn": ["createdAt"],
       "$code": {
         ".read": "auth != null",
