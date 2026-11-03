@@ -14,7 +14,19 @@ function serviceWorker(): Plugin {
     name: 'shogi-service-worker',
     apply: 'build',
     generateBundle(_options, bundle) {
-      const files = Object.keys(bundle).filter((name) => !name.endsWith('.map'));
+      const publicFiles = fs
+        .readdirSync('public', { recursive: true, withFileTypes: true })
+        .filter((entry) => entry.isFile() && entry.name !== '_headers')
+        .map((entry) =>
+          path
+            .relative('public', path.join(entry.parentPath, entry.name))
+            .split(path.sep)
+            .join('/'),
+        );
+      const files = [
+        ...Object.keys(bundle).filter((name) => !name.endsWith('.map')),
+        ...publicFiles,
+      ];
       const assets = ['./', ...files.map((name) => `./${name}`)];
       const version = String(
         files.reduce(
