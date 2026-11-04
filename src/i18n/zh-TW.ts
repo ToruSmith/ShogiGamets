@@ -32,6 +32,7 @@ export const zhTW = {
   'home.records': '棋譜與復盤',
   'home.records.desc': '存檔、匯入匯出 KIF／SFEN、賽後分析',
   'home.settings': '設定',
+  'home.hub': '回手談棋館',
   'home.offline': '已可離線使用',
 
   'setup.title.ai': '對電腦',

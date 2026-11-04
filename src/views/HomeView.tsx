@@ -22,6 +22,8 @@ interface Entry {
  * 大廳。選單是一排直書的短冊：右邊是第一項，像翻開一本直排的書。
  * 毛筆字只當裝飾，真正的說明文字依語言顯示。
  */
+const HUB_URL = 'https://torusmith.github.io/QiguanGamets/';
+
 export function HomeView() {
   const t = useT();
   const [setup, setSetup] = useState<'ai' | 'local' | null>(null);
@@ -82,6 +84,13 @@ export function HomeView() {
             {t('app.name')}
           </h1>
           <p className="text-base leading-relaxed text-muted-foreground">{t('app.tagline')}</p>
+          <a
+            href={HUB_URL}
+            data-testid="hub-link"
+            className="w-fit text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
+          >
+            {t('home.hub')}
+          </a>
           {resume && (
             <button
               type="button"
