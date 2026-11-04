@@ -207,5 +207,6 @@ npm run smoke -- https://<專案>.pages.dev --online --write
 
 ## 授權與素材
 
+- 第三方套件與字型的授權見 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 - 棋子與裝飾字型是 Google Fonts 的子集（SIL Open Font License 1.1），見 `src/assets/fonts/LICENSE.md`。
 - 榧木紋理、棋子、圖示都是程式產生的 SVG，沒有使用外部圖片。
