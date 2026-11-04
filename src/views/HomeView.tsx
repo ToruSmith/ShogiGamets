@@ -79,7 +79,6 @@ export function HomeView() {
     <main className="gutter mx-auto flex min-h-dvh max-w-6xl flex-col gap-8 py-8 lg:py-14">
       <section className="flex items-start justify-between gap-6">
         <div className="flex max-w-md flex-col gap-4 pt-2">
-          <p className="eyebrow">ShogiGamets · 將棋</p>
           <h1 className="text-3xl leading-tight font-semibold tracking-wide sm:text-4xl">
             {t('app.name')}
           </h1>
