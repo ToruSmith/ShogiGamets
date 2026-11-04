@@ -5,7 +5,7 @@
       ".indexOn": ["createdAt"],
       "$code": {
         ".read": "auth != null",
-        ".write": "auth != null && ((!data.exists() && newData.exists() && (newData.child('players/sente/uid').val() === auth.uid || newData.child('players/gote/uid').val() === auth.uid)) || (data.exists() && !newData.exists() && (data.child('players/sente/uid').val() === auth.uid || data.child('players/gote/uid').val() === auth.uid || data.child('createdAt').val() < now - 86400000)))",
+        ".write": "auth != null && ((!data.exists() && newData.exists() && (newData.child('players/sente/uid').val() === auth.uid || newData.child('players/gote/uid').val() === auth.uid)) || (data.exists() && !newData.exists() && (data.child('createdAt').val() < now - 86400000 || ((data.child('players/sente/uid').val() === auth.uid || data.child('players/gote/uid').val() === auth.uid) && !(data.child('players/sente').exists() && data.child('players/gote').exists())))))",
         ".validate": "newData.hasChildren(['createdAt', 'config', 'n', 'players']) && $code.length === 6 && $code.matches(/^[A-HJ-NP-Z2-9]+$/)",
         "createdAt": {
           ".validate": "newData.isNumber() && (data.exists() ? newData.val() === data.val() : newData.val() === now)"

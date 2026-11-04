@@ -109,6 +109,16 @@ describe('線上對局', () => {
     await host.leave();
     assert.equal(db.read(`rooms/${code}`), null);
   });
+
+  it('雙方都入座後，棋手不能刪房；超過一天的舊房間任何登入者都能清除', async () => {
+    const { db, code } = await setup(EVEN);
+    for (const uid of ['alice', 'bob', 'mallory']) {
+      assert.throws(() => db.write({ [`rooms/${code}`]: null }, { uid }), PermissionDenied);
+    }
+    db.time += 25 * 60 * 60 * 1000;
+    db.write({ [`rooms/${code}`]: null }, { uid: 'mallory' });
+    assert.equal(db.read(`rooms/${code}`), null);
+  });
 });
 
 describe('持時間', () => {
