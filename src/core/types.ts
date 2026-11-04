@@ -54,7 +54,8 @@ export type GameEnd =
   | 'perpetual-check'
   | 'resign'
   | 'timeout'
-  | 'declaration';
+  | 'declaration'
+  | 'agreement';
 
 export interface GameResult {
   /** null 代表和局（千日手） */

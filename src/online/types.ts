@@ -49,6 +49,10 @@ export interface RoomData {
   players: Partial<Record<Seat, RoomPlayer>>;
   moves?: Record<string, RoomMove> | (RoomMove | null)[];
   resigned?: Partial<Record<Seat, boolean>>;
+  /** 入玉宣言時的手數；由重演判斷是否成立 */
+  declared?: Partial<Record<Seat, number>>;
+  /** 提和時的手數；雙方的手數相同且等於目前手數，就是同意和局 */
+  draw?: Partial<Record<Seat, number>>;
   presence?: Partial<Record<Seat, boolean>>;
   rematch?: Partial<Record<Seat, boolean>>;
   next?: string;

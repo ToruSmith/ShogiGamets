@@ -43,6 +43,14 @@ export function PlayRoute() {
   return match ? <PlayView controller={match} /> : null;
 }
 
+const DRAW_LABELS = {
+  local: 'play.drawAgree',
+  hidden: 'play.drawOffer',
+  available: 'play.drawOffer',
+  sent: 'play.drawSent',
+  received: 'play.drawAccept',
+} as const;
+
 export function PlayView({
   controller,
   header,
@@ -256,6 +264,22 @@ export function PlayView({
               {t('play.resign')}
             </Button>
           </div>
+
+          {snapshot.canDeclare && (
+            <Button onClick={() => controller.declare()} data-testid="declare">
+              {t('play.declare')}
+            </Button>
+          )}
+          {snapshot.draw !== 'hidden' && !result && (
+            <Button
+              variant="outline"
+              onClick={() => controller.offerDraw()}
+              disabled={snapshot.draw === 'sent'}
+              data-testid="draw"
+            >
+              {t(DRAW_LABELS[snapshot.mode === 'local' ? 'local' : snapshot.draw])}
+            </Button>
+          )}
 
           {result && (
             <div className="grid grid-cols-2 gap-2">

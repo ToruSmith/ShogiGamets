@@ -121,6 +121,41 @@ describe('線上對局', () => {
   });
 });
 
+describe('入玉宣言與提和', () => {
+  it('雙方在同一手提和才算和局，走下一手就失效', async () => {
+    const { db, host, guest, views, code } = await setup();
+    await host.offerDraw();
+    await flush();
+    assert.equal(views.guest?.game.result, null);
+    await host.play(usi('7g7f'));
+    await flush();
+    await guest.offerDraw();
+    await flush();
+    assert.equal(views.guest?.game.result, null, '對方上一手的提和已失效');
+    await host.offerDraw();
+    await flush();
+    assert.deepEqual(views.guest?.game.result, { winner: null, reason: 'agreement' });
+    assert.equal(db.read(`rooms/${code}/draw/sente`), 1);
+  });
+
+  it('條件不成立的宣言不算數，也不能替別人宣言或提和', async () => {
+    const { db, views, code } = await setup();
+    const write = (uid: string, path: string, value: number): void =>
+      db.write({ [`rooms/${code}/${path}`]: value }, { uid });
+    write('alice', 'declared/sente', 0);
+    await new RulesBackend(db, 'bob').update(code, { 'draw/gote': 0 });
+    await flush();
+    const room = db.read(`rooms/${code}`) as RoomData;
+    assert.equal(replayRoom(room).game.result, null);
+    assert.equal(views.host?.game.moves.length, 0);
+    assert.throws(() => write('alice', 'declared/gote', 0), PermissionDenied);
+    assert.throws(() => write('alice', 'draw/gote', 0), PermissionDenied);
+    assert.throws(() => write('mallory', 'draw/sente', 0), PermissionDenied);
+    assert.throws(() => write('alice', 'declared/sente', 0), PermissionDenied, '只能宣言一次');
+    assert.throws(() => write('alice', 'draw/sente', 3), PermissionDenied, '手數要是目前的手數');
+  });
+});
+
 describe('持時間', () => {
   const timed: RoomConfig = { ...EVEN, mainMs: 60_000 };
 
