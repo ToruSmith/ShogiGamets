@@ -62,6 +62,10 @@ export interface MatchSnapshot {
   result: GameResult | null;
   lastMove: Move | null;
   canUndo: boolean;
+  /** 現在可以入玉宣言 */
+  canDeclare: boolean;
+  /** 提和按鈕的狀態 */
+  draw: DrawState;
   /** 現在輪到的一方能不能由這個畫面操作 */
   interactive: boolean;
   /** 預設放在下方的一方 */
@@ -71,11 +75,15 @@ export interface MatchSnapshot {
   online: OnlineInfo | null;
 }
 
+export type DrawState = 'hidden' | 'available' | 'sent' | 'received';
+
 export interface MatchController {
   readonly store: Store<MatchSnapshot>;
   now(): number;
   play(move: Move): void;
   resign(): void;
+  declare(): void;
+  offerDraw(): void;
   undo(): void;
   rematch(): void;
   dispose(): void;
@@ -184,6 +192,8 @@ export class LocalMatch implements MatchController {
       result,
       lastMove: game.moves.at(-1) ?? null,
       canUndo: !timed && humanCount > 0 && (config.mode === 'local' || this.hasHumanMove()),
+      canDeclare: !this.thinking && this.isHuman(game.turn) && game.canDeclare,
+      draw: config.mode === 'local' ? 'available' : 'hidden',
       interactive: !result && !this.thinking && this.isHuman(game.turn),
       bottom: config.mode === 'ai' ? config.human : SENTE,
       times: [...this.times],
@@ -356,6 +366,19 @@ export class LocalMatch implements MatchController {
     this.finish();
   }
 
+  declare(): void {
+    if (!this.game.canDeclare || this.thinking || !this.isHuman(this.game.turn)) return;
+    this.game.declare();
+    this.finish();
+  }
+
+  /** 雙人同機時，提和就是雙方當場同意 */
+  offerDraw(): void {
+    if (this.game.result || this.config.mode !== 'local') return;
+    this.game.agreeDraw();
+    this.finish();
+  }
+
   rematch(): void {
     // 由畫面重新建立 LocalMatch
   }
@@ -368,6 +391,15 @@ export class LocalMatch implements MatchController {
 }
 
 /** 線上對局：狀態完全來自 RoomSession 的房間資料 */
+/** 手數變了，之前的提和就失效 */
+function onlineDrawState(view: RoomView | null): DrawState {
+  if (!view?.seat || !view.opponentJoined || view.game.result) return 'hidden';
+  const ply = view.game.moves.length;
+  const offers = view.room.draw ?? {};
+  if (offers[view.seat] === ply) return 'sent';
+  return offers[otherSeat(view.seat)] === ply ? 'received' : 'available';
+}
+
 export class OnlineMatch implements MatchController {
   readonly store: Store<MatchSnapshot>;
   readonly session: RoomSession;
@@ -420,6 +452,8 @@ export class OnlineMatch implements MatchController {
       result: game.result,
       lastMove: game.moves.at(-1) ?? null,
       canUndo: false,
+      canDeclare: Boolean(view?.myTurn) && game.canDeclare,
+      draw: onlineDrawState(view),
       interactive: Boolean(view?.myTurn) && !game.result,
       bottom: mine,
       times: view?.times ?? [],
@@ -482,6 +516,14 @@ export class OnlineMatch implements MatchController {
 
   resign(): void {
     void this.session.resign();
+  }
+
+  declare(): void {
+    void this.session.declare();
+  }
+
+  offerDraw(): void {
+    void this.session.offerDraw();
   }
 
   undo(): void {}

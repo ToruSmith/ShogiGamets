@@ -78,6 +78,18 @@
             ".validate": "newData.val() === true"
           }
         },
+        "declared": {
+          "$seat": {
+            ".write": "auth != null && !data.exists() && data.parent().parent().child('players').child($seat).child('uid').val() === auth.uid",
+            ".validate": "newData.isNumber() && newData.val() === data.parent().parent().child('n').val()"
+          }
+        },
+        "draw": {
+          "$seat": {
+            ".write": "auth != null && data.parent().parent().child('players').child($seat).child('uid').val() === auth.uid",
+            ".validate": "newData.isNumber() && newData.val() === data.parent().parent().child('n').val()"
+          }
+        },
         "presence": {
           "$seat": {
             ".write": "auth != null && data.parent().parent().child('players').child($seat).child('uid').val() === auth.uid",

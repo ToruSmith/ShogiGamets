@@ -64,6 +64,8 @@ LocalMatch / analyzeGame ─▶ ShogiEngine 介面 ─▶ UsiEngine ─▶ Worke
   （駒落ち由上手先走）判斷輪到誰。
 - 超時：畫面每 250ms 用伺服器時間（`.info/serverTimeOffset`）檢查一次，雙方從同一份時間戳得到同樣的結論。
 - 再戰：雙方都按下後，由先手方開新房（交換先後手）並寫入 `next`，另一方跟過去。
+- 入玉宣言與提和：`declared/<seat>`、`draw/<seat>` 記下當時的手數，由 `replayRoom` 判斷。宣言條件不成立就忽略；
+  雙方的提和手數相同且等於當時手數才算和局，走下一手就失效。
 - 大廳：`listRooms('newest')` 讀最新 30 個房間，只列出公開、只有一人、還沒開始的房間。
 
 ## 常見的修改

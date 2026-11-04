@@ -1,3 +1,4 @@
+import { canDeclare } from './declaration.ts';
 import type { Move } from './move.ts';
 import { Position, START_SFEN } from './position.ts';
 import type { Color, GameResult } from './types.ts';
@@ -69,6 +70,23 @@ export class Game {
     this.ending = null;
     this.evaluateEnding();
     return move;
+  }
+
+  /** 走子方此刻可以入玉宣言 */
+  get canDeclare(): boolean {
+    return !this.ending && canDeclare(this.position);
+  }
+
+  /** 入玉宣言。條件不成立時回傳 false，棋局繼續。 */
+  declare(): boolean {
+    if (!this.canDeclare) return false;
+    this.ending = { winner: this.turn, reason: 'declaration' };
+    return true;
+  }
+
+  /** 雙方同意和局（持將棋） */
+  agreeDraw(): void {
+    if (!this.ending) this.ending = { winner: null, reason: 'agreement' };
   }
 
   conclude(loser: Color, reason: 'resign' | 'timeout'): void {

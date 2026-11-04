@@ -34,6 +34,13 @@ function sortedMoves(room: RoomData): RoomMove[] {
   return entries.sort((a, b) => a.i - b.i);
 }
 
+/** 這個手數上的宣言與和局。宣言不成立時棋局繼續。 */
+function settleAt(room: RoomData, game: Game): void {
+  const ply = game.moves.length;
+  if (room.declared?.[seatOf(game.turn)] === ply) game.declare();
+  if (room.draw?.sente === ply && room.draw.gote === ply) game.agreeDraw();
+}
+
 export interface RoomReplay {
   game: Game;
   clock: ClockState;
@@ -56,6 +63,7 @@ export function replayRoom(room: RoomData): RoomReplay {
   const moves = sortedMoves(room);
   const expected = Math.max(room.n, moves.length);
   for (let ply = 0; ply < expected; ply++) {
+    settleAt(room, game);
     if (game.result) break;
     const mover = game.turn;
     const entry = moves[ply];
@@ -78,6 +86,7 @@ export function replayRoom(room: RoomData): RoomReplay {
     times.push(elapsed);
     last = entry.t;
   }
+  settleAt(room, game);
   for (const seat of ['sente', 'gote'] as const) {
     if (room.resigned?.[seat]) game.conclude(colorOfSeat(seat), 'resign');
   }
@@ -259,6 +268,21 @@ export class RoomSession {
     const view = this.current;
     if (!view?.seat || view.game.result) return;
     await this.backend.update(view.code, { [`resigned/${view.seat}`]: true });
+  }
+
+  /** 入玉宣言；只有輪到自己且條件成立才會送出 */
+  async declare(): Promise<void> {
+    const view = this.current;
+    if (!view?.myTurn || !view.game.canDeclare) return;
+    if (isFlagged(view, this.serverNow())) return;
+    await this.backend.update(view.code, { [`declared/${view.seat}`]: view.game.moves.length });
+  }
+
+  /** 提和，或同意對方的提和。對局繼續走下去，這次提和就失效。 */
+  async offerDraw(): Promise<void> {
+    const view = this.current;
+    if (!view?.seat || view.game.result) return;
+    await this.backend.update(view.code, { [`draw/${view.seat}`]: view.game.moves.length });
   }
 
   async requestRematch(): Promise<void> {

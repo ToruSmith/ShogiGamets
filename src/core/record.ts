@@ -149,6 +149,7 @@ const RESULT_WORDS: Record<string, string> = {
   'perpetual-check': '反則負け',
   checkmate: '詰み',
   declaration: '入玉勝ち',
+  agreement: '持将棋',
 };
 
 /** 半形寬度：全形字算 2，對齊棋步欄位用 */
