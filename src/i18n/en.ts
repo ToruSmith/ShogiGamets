@@ -35,6 +35,7 @@ export const en: Record<MessageKey, string> = {
   'home.records': 'Games & review',
   'home.records.desc': 'Saved games, KIF/SFEN import and export, analysis',
   'home.settings': 'Settings',
+  'home.hub': 'All board games',
   'home.offline': 'Ready to play offline',
 
   'setup.title.ai': 'Play the computer',
