@@ -38,7 +38,7 @@ React 19、Vite、TypeScript（strict）、Tailwind CSS 4、shadcn/ui（只用�
 | `npm run format`                               | Prettier 排版，不手動調整                                           |
 
 改完程式後 `npm run check` 與 `npm run test:e2e` 都要通過。CI（`.github/workflows/ci.yml`）在每次推送都會跑；
-`health.yml` 每週檢查正式網站、Firebase 連線與安全公告。
+`health.yml` 每月檢查正式網站、Firebase 連線與安全公告。
 
 ## 分層
 

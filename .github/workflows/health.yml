@@ -1,6 +1,6 @@
 name: Health
 
-# 每週巡檢：正式網站還活著、線上對戰連得上 Firebase、相依套件沒有高風險的安全公告。
+# 每月巡檢：正式網站還活著、線上對戰連得上 Firebase、相依套件沒有高風險的安全公告。
 # 失敗時 GitHub 會寄信通知儲存庫擁有者。也可以在 Actions 頁面手動執行（Run workflow）。
 # 注意：儲存庫 60 天沒有任何提交時，GitHub 會自動停用排程，到 Actions 頁面按「Enable workflow」即可恢復。
 on:

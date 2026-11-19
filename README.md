@@ -210,7 +210,7 @@ npm run smoke -- https://<專案>.pages.dev --online --write
 
 ## 維護
 
-- **每週巡檢**：`.github/workflows/health.yml` 每週一檢查正式網站、匿名登入並讀取大廳，並檢查會隨網站發佈的套件有沒有安全公告；
+- **每月巡檢**：`.github/workflows/health.yml` 每月 1 日檢查正式網站、匿名登入並讀取大廳，並檢查會隨網站發佈的套件有沒有安全公告；
   失敗時 GitHub 會寄信通知。也可以在 Actions 頁面手動執行。
 - **給 AI 工程師**：規則寫在 [AGENTS.md](AGENTS.md)。安全設計與回報方式見 [SECURITY.md](SECURITY.md)。
 
