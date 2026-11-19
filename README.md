@@ -3,7 +3,7 @@
 在榧木盤上下將棋的網頁遊戲：對電腦、雙人同機、線上對戰、詰將棋、復盤與賽後分析。
 規則引擎、AI 與棋譜處理全部在瀏覽器裡執行，安裝成 PWA 後可以離線遊玩。
 
-**[立即開始下棋](https://shtoruogigamets.pages.dev/)**
+**[立即開始下棋](https://shtoruogigamets.pages.dev/)**　·　[玩家指南](docs/player-guide.md)
 
 ![大廳](docs/screenshots/home.jpg)
 
@@ -168,7 +168,7 @@ Firebase SDK 只在進入線上對戰時才動態載入，單機模式不會下�
 
 - 環境變數在建置時讀進程式，**改完要重新部署**才會生效。「正式版」與「預覽」的變數是分開設定的。
 - 路由用網址雜湊（`#/play`、`#/r/ABC234`），不需要設定轉址。
-- `public/_headers` 讓 `sw.js` 與 `index.html` 不被快取、`assets/` 長期快取。
+- `public/_headers` 讓 `sw.js` 與 `index.html` 不被快取、`assets/` 長期快取，並加上禁止被其他網站嵌入等安全標頭。
 - 所有路徑都是相對路徑，部署在子目錄或自訂網域都能運作。
 
 ### 4. 驗收
@@ -208,8 +208,15 @@ npm run smoke -- https://<專案>.pages.dev --online --write
 - `e2e/`：點選與拖曳走子、升變、打入、悔棋、對電腦、投了與分析、語言切換、詰將棋、棋譜匯入、
   兩個分頁的線上對戰與再戰、離線。e2e 版用 localStorage 與 BroadcastChannel 模擬 Firebase。
 
+## 維護
+
+- **每週巡檢**：`.github/workflows/health.yml` 每週一檢查正式網站、匿名登入並讀取大廳，並檢查會隨網站發佈的套件有沒有安全公告；
+  失敗時 GitHub 會寄信通知。也可以在 Actions 頁面手動執行。
+- **給 AI 工程師**：規則寫在 [AGENTS.md](AGENTS.md)。安全設計與回報方式見 [SECURITY.md](SECURITY.md)。
+
 ## 授權與素材
 
+- 程式碼沒有採用開源授權，著作權由作者保留。
 - 第三方套件與字型的授權見 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 - 棋子與裝飾字型是 Google Fonts 的子集（SIL Open Font License 1.1），見 `src/assets/fonts/LICENSE.md`。
 - 榧木紋理、棋子、圖示都是程式產生的 SVG，沒有使用外部圖片。

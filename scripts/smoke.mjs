@@ -35,6 +35,11 @@ check(
   home.headers.get('cache-control') ?? '沒有 Cache-Control',
 );
 check(home.headers.get('x-content-type-options') === 'nosniff', '安全標頭（_headers）');
+check(
+  /frame-ancestors/.test(home.headers.get('content-security-policy') ?? ''),
+  '禁止被其他網站嵌入（_headers）',
+  home.headers.get('content-security-policy') ?? '沒有 Content-Security-Policy',
+);
 
 const sw = await fetch(new URL('sw.js', base));
 const swText = await sw.text();
