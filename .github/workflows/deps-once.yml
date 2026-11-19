@@ -1,0 +1,35 @@
+name: Deps (one-off)
+
+# 暫時的工作流程：在 GitHub 上更新 package-lock.json 後提交，並在同一個提交裡刪除自己。
+on:
+  push:
+    paths: ['.github/workflows/deps-once.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  deps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+      - name: 更新
+        run: |
+          # firebase 間接依賴 @grpc/grpc-js（只有 Node 版 Firestore 會用到，不會打包進網站）。
+          # 用 overrides 指定修正過的版本，消除 npm audit 的高風險公告。
+          latest=$(npm view @grpc/grpc-js version)
+          npm pkg set "overrides[@grpc/grpc-js]=^$latest"
+          npm install
+          npm audit fix
+      - run: npm audit --audit-level=high || true
+      - name: 提交並刪除這個工作流程
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -q .github/workflows/deps-once.yml
+          git add package.json package-lock.json
+          git commit -m "chore: 更新相依套件（以 overrides 升級 @grpc/grpc-js，修正 npm audit 高風險公告）"
+          git push
